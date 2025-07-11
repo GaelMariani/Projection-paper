@@ -1,6 +1,6 @@
 ########################################
 ##########                    ##########
-##########  Produce Figure 4  ##########
+##########  Produce Figure 2  ##########
 ##########                    ##########
 ########################################
 rm(list = ls(), envir = .GlobalEnv)
@@ -45,12 +45,12 @@ source(here::here("R_Code", "Rfunctions.R"))
                          value_to_plot      = "delta",
                          fill_var           = "join",
                          group_var          = "join",
-                         y_lab              = "Delta change (%)",
+                         y_lab              = "% change",
                          ssp_to_select      = c("Historical", "ssp126", "ssp585"),
                          pathways_to_select = c("Biomass", "Carcass", "Fecal Pellets"),
                          fishing_to_select  = c("nh", "hf"),
                          envelope           = TRUE, 
-                         fishmip            = delta_tas_fishmip,
+                         fishmip            = NULL,
                          worm               = NULL, # worm.data.list,
                          name               = NULL) 
   
@@ -68,12 +68,12 @@ source(here::here("R_Code", "Rfunctions.R"))
     cowplot::draw_plot(fp,   x = 0.59, y = 0.44, width = 0.06, height = 0.06) +
     cowplot::draw_plot(carc, x = 0.16, y = 0.18, width = 0.1,  height = 0.1) +
     cowplot::draw_plot(carc, x = 0.58,  y = 0.18, width = 0.1,  height = 0.1) +
-    cowplot::draw_plot_label(label = c("(a)", "(b)", "(c)", "(d)", "(e)", "(f)"),
+    cowplot::draw_plot_label(label = c("a", "b", "c", "d", "e", "f"),
                              size = 11,
-                             x = c(rep(c(0.125, 0.555), 3)),
+                             x = c(rep(c(0.14, 0.57), 3)),
                              y = c(rep(0.93, 2), rep(0.68, 2), rep(0.43, 2)))
   
   ### ----- Save the figure 
-  ggplot2::ggsave(here::here("Figures", "Figure2.jpeg"), width = 4.5, height = 5, device = "jpeg")
+  ggplot2::ggsave(here::here("Figures", "Figure2-v2.jpeg"), width = 4.5, height = 5, device = "jpeg")
   
 ### -----

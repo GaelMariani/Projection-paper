@@ -76,13 +76,13 @@ source(here::here("R_Code", "Rfunctions.R"))
                        x        = c(0.25, 0.75), 
                        y        = c(0.98, 0.98), 
                        size     = 18) +
-    cowplot::draw_plot_label(label = c("(a)", "(b)", "(c)", "(d)"),
+    cowplot::draw_plot_label(label = c("(A)", "(B)", "(C)", "(D)"),
                              size = 14,
                              x = c(0, 0.5, 0, 0.5),
                              y = c(0.99, 0.99, 0.39, 0.39))
   
   ### ----- Save the figure
-  ggplot2::ggsave(here::here("Figures", "Figure5.jpeg"), width = 12, height = 8, device = "jpeg", dpi = 1000)
+  ggplot2::ggsave(here::here("Figures", "Figure5-cap.jpeg"), width = 12, height = 8, device = "jpeg", dpi = 1000)
   
 
 ### -----

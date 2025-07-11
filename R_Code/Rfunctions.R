@@ -141,14 +141,40 @@ yearly_evol_paper <- function(data, value_to_plot, fill_var, y_lab, group_var, s
     # Add fishmip outputs to the plot
     plot <- plot + 
       
+      ggplot2::scale_fill_manual(values = c("Historical" = "#985ba6", "SSP 1-2.6" = "#985ba6", "SSP 5-8.5" = "#985ba6"),
+                                 name   = NULL) +
+      
+      ggplot2::scale_color_manual(values = c("Historical" = "#985ba6", "SSP 1-2.6" = "#985ba6", "SSP 5-8.5" = "#985ba6"),
+                                 name   = NULL) +
+      
       ggplot2::geom_line(data     = fishmip.data,
                          mapping  = ggplot2::aes(x = x, y = y_mean, color = fill, group = fill),
-                         linetype = "twodash",
-                         size     = 0.8, 
+                         size     = 0.8,
+                         color    = "#5c9666",
                          show.legend = FALSE) +
       
-      ggplot2::facet_grid(facet ~ fishing)
-    
+      ggplot2::geom_ribbon(data    = fishmip.data,
+                           mapping = ggplot2::aes(x     = x,
+                                                  y     = y_mean,
+                                                  ymin  = y_min,
+                                                  ymax  = y_max,
+                                                  fill  = fill,
+                                                  group = fill),
+                           size     = 0.25,
+                           color    = "#5c9666",
+                           fill     = "#5c9666",
+                           alpha    = 0.1,
+                           show.legend = TRUE) +
+      
+      ggplot2::guides(color = FALSE, fill = FALSE) +
+      
+      ## ---- Add labels
+      ggplot2::geom_label(label = "BOATS", x = 1980, y = -13, label.padding = unit(0.3, "lines"), label.size = 0.35, # x = 1.7, y = -27.5
+                          color = "#985ba6") +
+      
+      ggplot2::geom_label(label = "FishMIP ensemble", x = 1980, y = -10, label.padding = unit(0.3, "lines"), label.size = 0.35, # x = 1.7, y = -27.5
+                          color = "#5c9666") 
+
   }
   
   if(! is.null(name)) {
@@ -342,7 +368,7 @@ output_vs_AtmTemp <- function(data.carbon, data.tas, fishmip, name = NULL){
                         color = "black",
                         fill  = "#75baa8") +
     
-    ggplot2::xlab(label = "Change in TAS (°C)") +
+    ggplot2::xlab(label =  "Change in TAS (\u00B0C)") + #expression("Change in TAS ("*degree*"C)")
     ggplot2::ylab(label = "Change in carbon (%)") +
     ggplot2::theme_bw() +
     ggplot2::theme(axis.text.x     = element_text(size = 11),
@@ -457,7 +483,7 @@ output_vs_AtmTemp <- function(data.carbon, data.tas, fishmip, name = NULL){
     #                     color = "black",
     #                     fill  = "#75baa8") +
     
-    ggplot2::xlab(label = "Change in TAS (°C)") +
+    ggplot2::xlab(label = "Change in TAS (\u00B0C)") +
     ggplot2::ylab(label = "Change in C export (%)") +
     ggplot2::theme_bw() +
     ggplot2::theme(axis.text.x     = element_text(size = 11),

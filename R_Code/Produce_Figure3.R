@@ -1,6 +1,6 @@
 ########################################
 ##########                    ##########
-##########  Produce Figure 4  ##########
+##########  Produce Figure 3  ##########
 ##########                    ##########
 ########################################
 rm(list = ls(), envir = .GlobalEnv)
@@ -69,13 +69,13 @@ source(here::here("R_Code", "Rfunctions.R"))
     cowplot::draw_plot(Cflux, x = 0.50, y = 0.575,  width = 0.08,  height = 0.08) +
     cowplot::draw_plot(fp,    x = 0.06, y = 0.085,  width = 0.08, height = 0.08) +
     cowplot::draw_plot(carc,  x = 0.50, y = 0.090,  width = 0.08,   height = 0.08) +
-    cowplot::draw_plot_label(label = c("(a)", "(b)", "(c)", "(d)"),
+    cowplot::draw_plot_label(label = c("(A)", "(B)", "(C)", "(D)"),
                              size = 11,
                              x = c(0, 0.43, 0, 0.43),
                              y = c(1, 1, 0.5, 0.5))
   
   ### ----- Save figure 2
-  ggplot2::ggsave(here::here("Figures", "Figure3.jpeg"), width = 11, height = 8, device = "jpeg", dpi = 600)
+  ggplot2::ggsave(here::here("Figures", "Figure3-cap.jpeg"), width = 11, height = 8, device = "jpeg", dpi = 600)
 
 ### -----  
   

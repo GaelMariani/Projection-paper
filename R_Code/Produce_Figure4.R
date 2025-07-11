@@ -67,14 +67,14 @@ source(here::here("R_Code", "Rfunctions.R"))
     cowplot::draw_plot(map.ls.vals[[4]]  + ggtitle("Fluxes (2090s)")     + theme(plot.title = element_text(size = 17, face = "bold")),  x = 0.50, y = 0.33, width = 0.52, height = 0.4) +  
     cowplot::draw_plot(map.ls.delta[[1]] + ggtitle(expression(bold(Delta*Biomass))) + theme(plot.title = element_text(size = 17, face = "bold")), x = 0.00, y = 0.00, width = 0.50, height = 0.4) +
     cowplot::draw_plot(map.ls.delta[[2]] + ggtitle(expression(bold(Delta*Fluxes)))    + theme(plot.title = element_text(size = 17, face = "bold")), x = 0.50, y = 0.00, width = 0.50, height = 0.4) +  
-    cowplot::draw_plot_label(label = c("(a)", "(d)", "(b)", "(e)", "(c)", "(f)"),
+    cowplot::draw_plot_label(label = c("(A)", "(D)", "(B)", "(E)", "(C)", "(F)"),
                              size  = 16,
                              x     = c(0, 0.5, 0, 0.5, 0, 0.5),
                              y     = c(0.99, 0.99, 0.66, 0.66, 0.33, 0.33)) 
   
   
   ### ----- Save the figure
-  ggplot2::ggsave(here::here("Figures", "Figure4.jpeg"), width = 12, height = 10, device = "jpeg", dpi = 1000)
+  ggplot2::ggsave(here::here("Figures", "Figure4-cap.jpeg"), width = 12, height = 10, device = "jpeg", dpi = 1000)
   
 
 ### ----- 
