@@ -38,11 +38,17 @@ source(here::here("R_Code", "Rfunctions.R"))
   
   ### ----- Maps of absolute values (Panels A to D)
   leg <- c(rep(expression(atop("(tC."~km^-2*")")), 2), rep(expression(atop("(tC."~km^-2*"."~yr^-1*")")), 2))
+  min_vals = log(c(rep(min(data.map.abs.ls[[1]]$data$layer), 2), rep(min(data.map.abs.ls[[3]]$data$layer), 2)) + 1)
+  max_vals = log(c(rep(max(data.map.abs.ls[[1]]$data$layer), 2), rep(max(data.map.abs.ls[[3]]$data$layer), 2)) + 1)
+  
   map.ls.vals <- lapply(1:length(data.map.abs.ls), 
                         function(i) univariate_map(data_map    = data.map.abs.ls[[i]],
                                                    color_scale = viridis::viridis(6, direction = 1),
                                                    legend      = leg[i], 
                                                    delta       = FALSE,
+                                                   log_trans   = TRUE,
+                                                   min_value   = min_vals[i], 
+                                                   max_value   = max_vals[i],
                                                    show.legend = TRUE,
                                                    overlap     = FALSE,
                                                    name        = NULL))
@@ -55,6 +61,7 @@ source(here::here("R_Code", "Rfunctions.R"))
                                                     color_scale = c("darkred", "white", "darkblue"),
                                                     legend      = "Change (%)",
                                                     delta       = TRUE,
+                                                    log_trans   = FALSE,
                                                     show.legend = TRUE,
                                                     overlap     = FALSE, 
                                                     name        = NULL))
@@ -67,14 +74,14 @@ source(here::here("R_Code", "Rfunctions.R"))
     cowplot::draw_plot(map.ls.vals[[4]]  + ggtitle("Fluxes (2090s)")     + theme(plot.title = element_text(size = 17, face = "bold")),  x = 0.50, y = 0.33, width = 0.52, height = 0.4) +  
     cowplot::draw_plot(map.ls.delta[[1]] + ggtitle(expression(bold(Delta*Biomass))) + theme(plot.title = element_text(size = 17, face = "bold")), x = 0.00, y = 0.00, width = 0.50, height = 0.4) +
     cowplot::draw_plot(map.ls.delta[[2]] + ggtitle(expression(bold(Delta*Fluxes)))    + theme(plot.title = element_text(size = 17, face = "bold")), x = 0.50, y = 0.00, width = 0.50, height = 0.4) +  
-    cowplot::draw_plot_label(label = c("(A)", "(D)", "(B)", "(E)", "(C)", "(F)"),
+    cowplot::draw_plot_label(label = c("a", "d", "b", "e", "c", "f"), # "(A)", "(D)", "(B)", "(E)", "(C)", "(F)"
                              size  = 16,
                              x     = c(0, 0.5, 0, 0.5, 0, 0.5),
                              y     = c(0.99, 0.99, 0.66, 0.66, 0.33, 0.33)) 
   
   
   ### ----- Save the figure
-  ggplot2::ggsave(here::here("Figures", "Figure4-cap.jpeg"), width = 12, height = 10, device = "jpeg", dpi = 1000)
+  ggplot2::ggsave(here::here("Figures", "Figure4-v2-log.jpeg"), width = 12, height = 10, device = "jpeg", dpi = 1000)
   
 
 ### ----- 

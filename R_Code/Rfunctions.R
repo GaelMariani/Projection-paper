@@ -265,8 +265,8 @@ output_vs_AtmTemp <- function(data.carbon, data.tas, fishmip, name = NULL){
     
     ## ---- Add points
     ggplot2::geom_point(mapping = ggplot2::aes(x = delta.tas, y = delta, color = year, shape = ssp), 
-                        size    = 1.5,
-                        alpha   = 0.25,
+                        size    = 2, #1.5,
+                        alpha   = 0.75,
                         show.legend = FALSE) +
     
     ggplot2::scale_color_viridis_c(name  = "Year", option = "viridis", direction = -1) +
@@ -369,7 +369,7 @@ output_vs_AtmTemp <- function(data.carbon, data.tas, fishmip, name = NULL){
                         fill  = "#75baa8") +
     
     ggplot2::xlab(label =  "Change in TAS (\u00B0C)") + #expression("Change in TAS ("*degree*"C)")
-    ggplot2::ylab(label = "Change in carbon (%)") +
+    ggplot2::ylab(label = "Change in biomass (%)") +
     ggplot2::theme_bw() +
     ggplot2::theme(axis.text.x     = element_text(size = 11),
                    axis.text.y     = element_text(size = 11),
@@ -403,8 +403,8 @@ output_vs_AtmTemp <- function(data.carbon, data.tas, fishmip, name = NULL){
     ggplot2::geom_point(mapping = ggplot2::aes(x = delta.tas, # |> dplyr::filter(pathway2 == "Carbon_Flux"), 
                                                y = delta, # |> dplyr::filter(pathway2 == "Carbon_Flux"), 
                                                color = year, shape = ssp), 
-                        size    = 1.5,
-                        alpha   = 0.25) +
+                        size    = 2, # 1.5,
+                        alpha   = 0.75) +
     
     ggplot2::scale_color_viridis_c(name  = "Year", option = "viridis", direction = -1) +
     
@@ -575,8 +575,9 @@ deltaB_vs_deltaFlux <- function(data.carbon, name = NULL){
   plot.fp <- ggplot2::ggplot(data.carb.fp) +
     ggplot2::geom_point(mapping = ggplot2::aes(x = Biomass, 
                                                y = Carbon_Flux, 
-                                               color = year,
-                                               shape = ssp), 
+                                               # alpha   = 0.75,
+                                               color   = year,
+                                               shape   = ssp), 
                         size = 2.5, show.legend = FALSE) +
     
     ggplot2::scale_color_viridis_c(name = "Year", option = "viridis", direction = -1) +
@@ -623,7 +624,7 @@ deltaB_vs_deltaFlux <- function(data.carbon, name = NULL){
                                    name   = NULL, 
                                    guide  = NULL) +
     
-    ggplot2::scale_shape_manual(values = c("Historical" = 16, "ssp126" = 1), 
+    ggplot2::scale_shape_manual(values = c("Historical" = 2, "ssp126" = 1), 
                                 name   = NULL,
                                 labels = c("Historical", "SSP 1-2.6"),
                                 guide = NULL) + 
@@ -686,6 +687,7 @@ deltaB_vs_deltaFlux <- function(data.carbon, name = NULL){
     
     ggplot2::geom_point(mapping = ggplot2::aes(x = Biomass, 
                                                y = Carbon_Flux,
+                                               # alpha = 0.75,
                                                shape = ssp,
                                                color = year), 
                         size = 2.5) +
@@ -715,9 +717,12 @@ deltaB_vs_deltaFlux <- function(data.carbon, name = NULL){
                                    name   = NULL, 
                                    guide  = "none") +
     
-    ggplot2::scale_shape_manual(values = c("Historical" = 16, "ssp126" = 1), 
+    ggplot2::scale_shape_manual(values = c("Historical" = 2, "ssp126" = 1), 
                                 name   = NULL,
                                 labels = c("Historical", "SSP 1-2.6")) +
+    
+    # ggplot2::scale_alpha_continuous(guide = "none") +
+    
     # guide = "none") + 
     
     ggplot2::scale_color_manual(values = c("Carcass" = "#efc912"),
@@ -779,10 +784,11 @@ deltaB_vs_deltaFlux <- function(data.carbon, name = NULL){
 #' @export
 #'
 #' @examples
-univariate_map <- function(data_map, values, color_scale, delta = FALSE, legend, show.legend, overlap, factor_overlap, name = NULL){
+univariate_map <- function(data_map, values, color_scale, delta = FALSE, log_trans = TRUE, min_value, max_value, legend, show.legend, overlap, factor_overlap, name = NULL){
   
   # if(delta == TRUE & values[3] > 0){data_map$data$layer[data_map$data$layer > 0] <- NA ; values[3] = 0}
   if(delta == TRUE){data_map$data$layer[data_map$data$layer > 100] <- 100}
+  if(log_trans == TRUE){data_map$data$layer <- log(data_map$data$layer + 1)}
   
   ### Produce the map
   map <- ggplot2::ggplot() +
@@ -849,7 +855,8 @@ univariate_map <- function(data_map, values, color_scale, delta = FALSE, legend,
     map <- map +
       ggplot2::scale_fill_gradientn(colors   = color_scale,
                                     values   = if(delta == TRUE){scales::rescale(values)}, 
-                                    limits   = if(delta == TRUE){c(round(min(values),0), round(max(values), 0))} else {c(min(data_map$data$layer), max(data_map$data$layer))},
+                                    # limits   = if(delta == TRUE){c(round(min(values),0), round(max(values), 0))} else {c(min(data_map$data$layer), max(data_map$data$layer))},
+                                    limits   = if(delta == TRUE){c(round(min(values),0), round(max(values), 0))} else {c(min_value, max_value)},
                                     na.value = "transparent") 
     
   }
@@ -1074,3 +1081,63 @@ bivariate_map <- function(data_map, bivariate_color_scale, xlab, ylab, name){
   return(map_bi)
   
 }
+
+
+
+#' Map A Raster
+#'
+#' @param data 
+#' @param grp 
+#' @param sc 
+#' @param midpoint 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+map_raster <- function(data, grp, sc, midpoint){
+  
+  ## --- Rasterize
+  rast <- raster::raster(pracma::flipud(data[,, grp, sc]), 
+                         ymn = -90,
+                         ymx = 90,
+                         xmn = -180,
+                         xmx = 180,
+                         crs = "+proj=longlat +datum=WGS84 +no_defs")
+  
+  data_plot <- raster::as.data.frame(rast, xy = TRUE)
+  
+  
+  ## --- Plot
+  map <- ggplot() +
+    geom_raster(data = data_plot, aes(x = x, y = y, fill = layer)) +
+    scale_fill_gradient2(low = "darkblue", mid = "white", high = "red", midpoint = midpoint,
+                         limits = c(0, 2)) +
+    scale_x_continuous(breaks = seq(-180, 180, 20), expand = c(0,0)) +
+    scale_y_continuous(breaks = seq(-90, 90, 20), expand = c(0,0)) +
+    labs(x = "Longitude", y = "Latitude", fill = "Contribution (%)") +
+    theme_bw() +
+    ggtitle(paste0("Size Class: ", sc)) +
+    guides(size = "none", fill = guide_colourbar(title.position = "right", barwidth = 0.7)) +
+    theme(plot.title    = element_text(size = 15, face = "bold", hjust = 0.5, vjust = -1),
+          legend.title  = ggplot2::element_text(size  = 14, 
+                                                face  = "bold", 
+                                                hjust = 0.5, 
+                                                vjust = 0.5, angle = -90),
+          legend.text        = ggplot2::element_text(size = 14),
+          legend.title.align = 0.5, 
+          legend.direction   = "vertical")
+  
+  
+  ggsave(map, 
+         filename = paste0(here::here("Figures/Maps_mortality"), "/Group", grp, "/SC", sc, ".jpeg"), 
+         device = "jpeg",
+         width    = 7,
+         height   = 3.5)
+  
+  return(map)
+  
+  
+}
+
+
