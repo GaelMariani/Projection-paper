@@ -1129,11 +1129,11 @@ map_raster <- function(data, grp, sc, midpoint){
           legend.direction   = "vertical")
   
   
-  ggsave(map, 
-         filename = paste0(here::here("Figures/Maps_mortality"), "/Group", grp, "/SC", sc, ".jpeg"), 
-         device = "jpeg",
-         width    = 7,
-         height   = 3.5)
+  # ggsave(map, 
+  #        filename = paste0(here::here("Figures/Maps_mortality"), "/Group", grp, "/SC", sc, ".jpeg"), 
+  #        device = "jpeg",
+  #        width    = 7,
+  #        height   = 3.5)
   
   return(map)
   
