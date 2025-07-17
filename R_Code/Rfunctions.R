@@ -1141,3 +1141,160 @@ map_raster <- function(data, grp, sc, midpoint){
 }
 
 
+#' Plot Sequestration Barplot
+#'
+#' @param data.ss steady state data
+#' @param data.trans transient simulation data
+#' @param type esm or fishing
+#' @param name 
+#' @param delta 
+#' @param ylab_trans 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+yearly_seq_plot <- function(data.ss, data.trans, delta, ylab_trans, type, name = NULL){
+  
+  if(type == "esm"){names(data.ss)[3] <- "fill" ; names(data.trans)[3] <- "color"}
+  if(type == "fishing"){
+    
+    names(data.ss)[4] <- "fill" ; names(data.trans)[4] <- "color"
+    
+    data.ss <- data.ss |> 
+      dplyr::mutate(fill = forcats::fct_relevel(fill, "nh", "hf"))
+    
+    data.trans <- data.trans |> 
+      dplyr::mutate(fill = forcats::fct_relevel(color, "nh", "hf"))
+    
+  }
+  
+  if(type == "both"){
+    
+    data.ss <- data.ss |>  
+      tidyr::unite(fill, ssp, fishing) |> 
+      dplyr::mutate(fill = forcats::fct_relevel(fill, "ssp126_nh", "ssp585_nh", "ssp126_hf", "ssp585_hf"))
+    
+    data.trans <- data.trans |>  
+      tidyr::unite(color, ssp, fishing) |> 
+      dplyr::mutate(color = forcats::fct_relevel(color, "ssp126_nh", "ssp585_nh", "ssp126_hf", "ssp585_hf")) |> 
+      dplyr::group_by(decades, color) |> 
+      dplyr::summarise(sum_decade = mean(sum_decade))
+    
+  }
+  
+  plot_ss <- ggplot2::ggplot(data = data.ss, mapping = ggplot2::aes(x = decades, y = sum_decade, fill = fill)) +
+    ggplot2::geom_col(position="dodge") + #fill = "grey60"
+    # geom_errorbar(mapping  = aes(ymin = (y-sd), ymax = (y+sd)),
+    #               width    = 0.15, 
+    #               colour   = "grey10", 
+    #               stat     ="identity", 
+    #               position = position_dodge(.9)) +
+    # facet_wrap(~facet) +
+    # ggplot2::geom_text(mapping  = ggplot2::aes(label = round(sum_decade, 1), x = decades, y = sum_decade),
+    #                    size     = 2.5, 
+    #                    hjust    = 0.5, 
+    #                    vjust    = -0.3,
+    #                    angle    = 60, 
+  #                    position = ggplot2::position_dodge(1)) +
+  ggplot2::labs(x = NULL, y = "Sequestration (GtC)") + 
+    ggplot2::theme_bw() +
+    ggplot2::theme(axis.text.x     = ggplot2::element_text(angle = 45, hjust = 1, size = 11),
+                   axis.text.y     = ggplot2::element_text(size = 11),
+                   axis.title.y    = ggplot2::element_text(size = 15),
+                   legend.text     = ggplot2::element_text(size = 12),
+                   legend.title    = ggplot2::element_text(size = 13),
+                   legend.position = "right")
+  
+  
+  if(delta == TRUE){
+    
+    mean_data <- data.trans |> 
+      dplyr::filter(decades > 1989 & decades < 2000) |> 
+      dplyr::group_by(esm, fishing) |> 
+      dplyr::summarise(mean_ref = mean(sum_decade))
+    
+    data.trans <- dplyr::left_join(data.trans, mean_data, by = "esm") |> 
+      dplyr::mutate(sum_decade = ((sum_decade - mean_ref)/mean_ref) *100)
+    
+  }
+  
+  plot_trans <- ggplot2::ggplot(data.trans, ggplot2::aes(x = decades, y = sum_decade, color = color)) +
+    ggplot2::geom_point(show.legend = FALSE) +
+    ggplot2::geom_smooth(se = TRUE, show.legend = FALSE) +
+    ggplot2::geom_smooth(se = FALSE, show.legend = FALSE) +
+    ggplot2::labs(y = ylab_trans, x = NULL) +
+    # ggplot2::scale_y_continuous(limits = c(0, max(data.trans$sum_decade))) +
+    ggplot2::scale_x_continuous(breaks = seq(1950, 2100, 15)) +
+    ggplot2::theme_bw() +
+    ggplot2::theme(axis.text.x     = ggplot2::element_text(angle = 45, hjust = 0.9, size = 11),
+                   axis.text.y     = ggplot2::element_text(size = 11),
+                   axis.title.y    = ggplot2::element_text(size = 15),
+                   legend.text     = ggplot2::element_text(size = 12),
+                   legend.title    = ggplot2::element_text(size = 13))
+  
+  if(type == "esm"){
+    plot_ss <- plot_ss +
+      ggplot2::scale_fill_manual(values = c("ssp126" = "darkslategray3", "ssp585" = "firebrick4"),
+                                 labels = c("SSP 1-2.6", "SSP 5-8.5"),
+                                 name = NULL) 
+    
+    plot_trans <- plot_trans +
+      ggplot2::scale_color_manual(values = c("ssp126" = "darkslategray3", "ssp585" = "firebrick4"),
+                                  labels = c("SSP 1-2.6", "SSP 5-8.5"),
+                                  name = NULL) 
+  }
+  
+  
+  if(type == "fishing"){
+    plot_ss <- plot_ss +
+      ggplot2::scale_fill_manual(values = c("nh" = "darkslategray3", "hf" = "firebrick4"),
+                                 labels = c("No Fishing", "Fishing"),
+                                 name = NULL) 
+    
+    plot_trans <- plot_trans +
+      ggplot2::scale_color_manual(values = c("nh" = "darkslategray3", "hf" = "firebrick4"),
+                                  labels = c("No Fishing", "Fishing"),
+                                  name = NULL) 
+  }
+  
+  if(type == "both"){
+    
+    plot_ss <- plot_ss +
+      # scale_fill_manual(values = c("ssp126_nh" = "darkslategray3", "ssp585_hf" = "firebrick4"),
+      #                   labels = c("SSP 1-2.6/No", "SSP 5-8.5/Yes"),
+      #                   name = "Climate/Fishing:")
+      scale_fill_manual(values = c("ssp126_nh" = "dodgerblue2", "ssp585_nh" = "firebrick2", 
+                                   "ssp126_hf" = "dodgerblue4", "ssp585_hf" = "firebrick4"),
+                        labels = c("SSP 1-2.6/No", "SSP 5-8.5/No", "SSP 1-2.6/Yes", "SSP 5-8.5/Yes"),
+                        name   = "Climate/Fishing:")
+    
+    plot_trans <- plot_trans +
+      # ggplot2::scale_color_manual(values = c("ssp126_nh" = "darkslategray3", "ssp585_hf" = "firebrick4"),
+      #                             labels = c("SSP 1-2.6/No", "SSP 5-8.5/Yes"),
+      #                             name = NULL) 
+      scale_color_manual(values = c("ssp126_nh" = "dodgerblue2", "ssp585_nh" = "firebrick2", 
+                                    "ssp126_hf" = "dodgerblue4", "ssp585_hf" = "firebrick4"),
+                         labels = c("SSP 1-2.6/No", "SSP 5-8.5/No", "SSP 1-2.6/Yes", "SSP 5-8.5/Yes"),
+                         name   = "Climate/Fishing:")
+  }
+  
+  fig <- cowplot::ggdraw() +
+    cowplot::draw_plot(plot_trans, x = 0.00, y = 0.00, width = 0.4, height = 1) + 
+    cowplot::draw_plot(plot_ss,    x = 0.40, y = 0.00, width = 0.6, height = 1) +
+    cowplot::draw_plot_label(label = c("(a)", "(b)"),
+                             size = 11,
+                             x = c(0, 0.39),
+                             y = c(1, 1))
+  
+  if(! is.null(name)) {
+    
+    ggplot2::ggsave(here::here("Figures", paste0(name, ".jpeg")), width = 8, height = 3, device = "jpeg", dpi = 1000)
+    
+  }
+  
+  return(fig)
+  
+}
+
+

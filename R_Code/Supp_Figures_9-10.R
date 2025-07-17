@@ -33,7 +33,7 @@ source(here::here("R_Code", "Rfunctions.R"))
   
 
 ### ---------------------------------------------
-### Produce the figures: Comparison BOATS vs. fishMIP outputs
+### Produce the figures: SST and NPP outputs from ESM
 ### ---------------------------------------------
 ### ----- 
   
