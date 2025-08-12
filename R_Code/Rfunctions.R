@@ -784,7 +784,7 @@ deltaB_vs_deltaFlux <- function(data.carbon, name = NULL){
 #' @export
 #'
 #' @examples
-univariate_map <- function(data_map, values, color_scale, delta = FALSE, log_trans = TRUE, min_value, max_value, legend, show.legend, overlap, factor_overlap, name = NULL){
+univariate_map <- function(data_map, values, color_scale, delta = FALSE, log_trans = TRUE, min_value = NULL, max_value = NULL, legend, show.legend, overlap, factor_overlap, name = NULL){
   
   # if(delta == TRUE & values[3] > 0){data_map$data$layer[data_map$data$layer > 0] <- NA ; values[3] = 0}
   if(delta == TRUE){data_map$data$layer[data_map$data$layer > 100] <- 100}

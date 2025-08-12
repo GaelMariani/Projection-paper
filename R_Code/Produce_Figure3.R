@@ -70,7 +70,7 @@ source(here::here("R_Code", "Rfunctions.R"))
     cowplot::draw_plot(fp,    x = 0.06, y = 0.085,  width = 0.08, height = 0.08) +
     cowplot::draw_plot(carc,  x = 0.50, y = 0.090,  width = 0.08,   height = 0.08) +
     cowplot::draw_plot_label(label = c("a", "b", "c", "d"), # "(A)", "(B)", "(C)", "(D)"
-                             size = 13,
+                             size = 18,
                              x = c(0, 0.43, 0, 0.43),
                              y = c(1, 1, 0.5, 0.5))
   

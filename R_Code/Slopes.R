@@ -35,6 +35,9 @@ rm(list = ls(), envir = .GlobalEnv)
     anova(mod_temp)
     mod_temp$coefficients
     
+    # --- Check model's assumptions
+    performance::check_model(mod_temp)
+    
     # --- Get 95% confidence intervalle of each slope
     slope_temp <- emmeans::lstrends(mod_temp, "pathway2", var = "delta.tas")
     slope_temp
@@ -52,6 +55,10 @@ rm(list = ls(), envir = .GlobalEnv)
     mod_biom <- lm(formula = delta_mean ~ biomass*flux_type, data = slope_biom_data)
     anova(mod_biom)
     mod_biom$coefficients
+    
+    
+    # --- Check model's assumptions
+    performance::check_model(mod_biom)
     
     # --- Get 95% confidence intervalle of each slope
     slope_biom <- emmeans::lstrends(mod_biom, "flux_type", var = "biomass")
